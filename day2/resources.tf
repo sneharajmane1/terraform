@@ -1,22 +1,36 @@
+data "aws_vpc" "default" { 
+  default = true
+}
+
+resource "aws_security_group" "default" {
+  name        = var.sg_name
+  description = "Allow SSH and HTTP access"
+  vpc_id      = ["vpc-0361625917c790ba5"]
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = my-security-group
+  }
+}
+
 resource "aws_instance" "ec2" {
-    ami           = "ami-0b6d9d3d33ba97d99"
-    instance_type = "t3.micro"
-    key_name      = "my-key"
-    count = 2
-    user_data = <<-EOF
-                #!/bin/bash
-                sudo apt update -y
-                sudo apt install apache2 -y
-                sudo systemctl start apache2
-                sudo systemctl enable apache2
-                echo "<h1>Welcome to my Web Server</h1>" | sudo tee /var/www/html/index.html
-            EOF 
-            root_block_device {
-              volume_size = 8
-              volume_type = "gp3"
-            }
-tags = {
-        Name = "WebServer"
-    }
-          
-}  
+  ami                    = "ami-0b6d9d3d33ba97d99"
+  instance_type          = t3.micro
+  key_name               = mykey
+  vpc_security_group_ids = ["sg-0911bc18773c76c42"]
+  user_data              = file("../user data.sh")
+
+  }  

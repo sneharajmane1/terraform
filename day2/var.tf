@@ -1,3 +1,4 @@
-variable "instance_type" {
-  default     = "t3.micro"
-}
+variable "sg_name" {
+    type        = string
+    default     = "t3.micro"
+}    
